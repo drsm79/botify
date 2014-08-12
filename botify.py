@@ -2,6 +2,7 @@ import logging
 import spotipy
 import spotipy.oauth2 as oauth2
 import json
+import config
 from errbot import BotPlugin, botcmd
 
 
