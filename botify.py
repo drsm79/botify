@@ -11,7 +11,7 @@ class BotifyPlugin(BotPlugin):
 
     @botcmd
     def botify_list(self, mess, args):
-        return "http://i.imgur.com/bmfwvDl.gif"
+        return mess, args
 
     @botcmd
     def botify_search(self, mess, args):
