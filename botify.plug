@@ -1,0 +1,6 @@
+[Core]
+Name = Botify
+Module = botify
+
+[Documentation]
+Description = let's listen to musics!

@@ -1,6 +1,25 @@
 import spotipy
 import spotipy.oauth2 as oauth2
 import json
+from errbot import BotPlugin, botcmd
+
+
+class BotifyPlugin(BotPlugin):
+    def activate(self):
+        super(BotifyPlugin, self).activate()
+        self.botify = Botify()
+
+    @botcmd
+    def botify_list(self, mess, args):
+        return "http://i.imgur.com/bmfwvDl.gif"
+
+    @botcmd
+    def botify_search(self, mess, args):
+        return "http://i.imgur.com/bmfwvDl.gif"
+
+    @botcmd
+    def botify_add(self, mess, args):
+        return "http://i.imgur.com/bmfwvDl.gif"
 
 
 class Botify:
