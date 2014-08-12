@@ -7,7 +7,7 @@ from errbot import BotPlugin, botcmd
 class BotifyPlugin(BotPlugin):
     def activate(self):
         super(BotifyPlugin, self).activate()
-        self.botify = Botify()
+        self.botify = Botify(config.__dict__.get("BOTIFY_CREDS"))
 
     @botcmd
     def botify_list(self, mess, args):
@@ -23,8 +23,8 @@ class BotifyPlugin(BotPlugin):
 
 
 class Botify:
-    def __init__(self):
-        creds = json.load(open('creds.json'))
+    def __init__(self, creds):
+        creds = json.load(open(creds))
         client_id = creds.get('CLIENT_ID', 'YOUR_CLIENT_ID')
         client_secret = creds.get('CLIENT_SECRET', 'YOUR_CLIENT_SECRET')
         redirect_uri = creds.get('REDIRECT_URI', 'YOUR_REDIRECT_URI')
