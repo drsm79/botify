@@ -1,3 +1,4 @@
+import logging
 import spotipy
 import spotipy.oauth2 as oauth2
 import json
@@ -7,6 +8,7 @@ from errbot import BotPlugin, botcmd
 class BotifyPlugin(BotPlugin):
     def activate(self):
         super(BotifyPlugin, self).activate()
+        logging.info('Fetch creds from' + config.__dict__.get("BOTIFY_CREDS"))
         self.botify = Botify(config.__dict__.get("BOTIFY_CREDS"))
 
     @botcmd
