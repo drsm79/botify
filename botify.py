@@ -53,6 +53,12 @@ class BotifyPlugin(BotPlugin):
             logging.error(e)
             return 'ruh roh\n http://i.imgur.com/bmfwvDl.gif'
 
+    @botcmd(split_args_with=None, admin_only=True)
+    def botify_authcheck(self, mess, args):
+        token = self.sp_oauth.get_access_token()
+        datetime.datetime.fromtimestamp(token['expires_at'])
+        return "Expires @ %s" % expires.strftime('%H:%M:%S')
+
     @botcmd
     def botify_list(self, mess, args):
         self.oath_refresh_if_needed()
