@@ -40,6 +40,10 @@ class BotifyPlugin(BotPlugin):
         """
         Do the oauth challenge and response fandango
         """
+        r = self.oath_refresh_if_needed()
+        if 'expired' not in r:
+            expires = self.token_expires()
+            return "%s. Expires @ %s" % (r, expires.strftime('%H:%M:%S'))
         try:
             if args:
                 return self.oauth_validate(args[0])
@@ -55,8 +59,8 @@ class BotifyPlugin(BotPlugin):
 
     @botcmd(split_args_with=None, admin_only=True)
     def botify_authcheck(self, mess, args):
-        token = self.sp_oauth.get_access_token()
-        datetime.datetime.fromtimestamp(token['expires_at'])
+        self.oath_refresh_if_needed()
+        expires = self.token_expires()
         return "Expires @ %s" % expires.strftime('%H:%M:%S')
 
     @botcmd
@@ -223,5 +227,21 @@ class BotifyPlugin(BotPlugin):
             return "http://i.imgur.com/s5guP5z.gif"
 
     def oath_refresh_if_needed(self):
+        expires = self.token_expires()
+        delta = expires - datetime.datetime.now()
+        if delta != abs(delta):
+            return "Token expired, reauth"
+
+        if delta.seconds < 300:
+            token_info = self.sp_oauth.get_cached_token()
+            print token_info['expires_at'], token_info['refresh_token']
+            self.sp_oauth.refresh_access_token(
+                token_info['refresh_token']
+            )
+            token_info = self.sp_oauth.get_cached_token()
+            print token_info['expires_at'], token_info['refresh_token']
+            return "Token refreshed"
+
+    def token_expires(self):
         token = self.sp_oauth.get_cached_token()
-        self.sp = spotipy.Spotify(auth=token['access_token'])
+        return datetime.datetime.fromtimestamp(token['expires_at'])
