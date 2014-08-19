@@ -72,7 +72,7 @@ class BotifyPlugin(BotPlugin):
             else:
                 for d in playlist_tracks:
                     logging.info(d)
-                    s = '%s : %s (%s) - %s' % (
+                    s = '%s : %s (%s) - [%s]' % (
                         d['track']['name'],
                         d['track']['album']['name'],
                         ', '.join([a['name'] for a in d['track']['artists']]),
@@ -116,6 +116,19 @@ class BotifyPlugin(BotPlugin):
             logging.error(e)
             return 'ruh roh\n http://i.imgur.com/bmfwvDl.gif'
 
+    @botcmd
+    def botify_delete(self, mess, args):
+        self.oath_refresh_if_needed()
+        playlist = self.playlist_id(mess)
+        try:
+            if playlist:
+                return self.delete_track(playlist, args.split(' '))
+            else:
+                return "No playlist for the room"
+        except spotipy.SpotifyException, e:
+            logging.error(e)
+            return 'ruh roh\n http://i.imgur.com/bmfwvDl.gif'
+
     def search(self, term, limit=10):
         try:
             tracks = self.sp.search(q=term, limit=limit)
@@ -123,6 +136,20 @@ class BotifyPlugin(BotPlugin):
             logging.error(e)
             return 'ruh roh\n http://i.imgur.com/bmfwvDl.gif'
         return tracks['tracks']['items']
+
+    def delete_track(self, playlist, track_ids):
+        logging.info("delete tracks: %s" % track_ids)
+        track_ids = ["spotify:track:%s" % t for t in track_ids]
+        try:
+            self.sp.user_playlist_delete_tracks(
+                self.username,
+                playlist,
+                track_ids
+            )
+        except spotipy.SpotifyException, e:
+            logging.error(e)
+            return 'ruh roh\n http://i.imgur.com/bmfwvDl.gif'
+        return "Track removed"
 
     def add_track(self, playlist, track_ids):
         logging.info("adding tracks: %s" % track_ids)
@@ -134,10 +161,8 @@ class BotifyPlugin(BotPlugin):
                 track_ids
             )
         except spotipy.SpotifyException, e:
-            if e.http_status != 201:
-                # there's a bug in spotipy that thinks a 201 is bad...
-                logging.error(e)
-                return 'ruh roh\n http://i.imgur.com/bmfwvDl.gif'
+            logging.error(e)
+            return 'ruh roh\n http://i.imgur.com/bmfwvDl.gif'
         return "Track added"
 
     def list_tracks(self, playlist):
